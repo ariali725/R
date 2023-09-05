@@ -1,0 +1,41 @@
+#Data
+revenue <- c(14574.49, 7606.46, 8611.41, 9175.41, 8058.65, 8105.44, 11496.28, 9766.09, 10305.32, 14379.96, 10713.97, 15433.50)
+expenses <- c(12051.82, 5695.07, 12319.20, 12089.72, 8658.57, 840.20, 3285.73, 5821.12, 6976.93, 16618.61, 10054.37, 3803.96)
+
+#Solution
+# profit for each month
+q1 <- revenue - expenses
+q1
+# profit after tax 30%
+q2 <- 0.3*q1
+q2
+# profit margin = profit after tax / revenue
+q3 <- q2/revenue
+q3
+# good months: profit after tax > mean
+mean <- mean(q2)
+mean
+q4 <- c()
+for(i in q2){
+  if(i > mean){
+    q4 <- c(q4, i)
+  }
+}
+q4
+# bad months: profit after tax < mean
+q5 <- c()
+for(j in q2){
+  if(j < mean){
+    q5 <- c(q5, j)
+  }
+}
+q5
+# the best; the worst
+best <- max(q4)
+best
+worst <- min(q5)
+worst
+  
+  
+  
+  
