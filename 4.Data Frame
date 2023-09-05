@@ -1,0 +1,87 @@
+# section 5 data frame
+# diff btw data frame and matrix: data frame can include diff combination of types of data, but matrix cannot.
+
+# 5-43 import data
+# 2 ways: manual operation; set working directory
+# manual operation
+stats <- read.csv(file.choose())
+# set working directory
+setwd("/Users/liyue/Documents/R")
+getwd()
+stats <- read.csv("Section5-Demographic-Data.csv", stringsAsFactors = T)
+stats
+
+# 5-44 explore your dataset
+# number of rows and column
+nrow(stats)
+ncol(stats)
+# head: default first 6 rows, use n to change; tail: last 6 rows
+head(stats, n=3)
+tail(stats)
+# structure, the debrief
+str(stats)
+
+# 5-45 $
+# dataframe$column 对等于 dataframe[, "columnname"]; row不行
+stats$Country.Name
+# levels[dataframe$column] 是把分类变量的所有分类都列出来 （read csv时要加一句,stringsAsFactors = T）
+stats$Income.Group
+str(stats)
+
+levels(stats$Income.Group)
+
+# 5-46 data frame operation
+# column与colunm之间可以直接operation；add column 可以直接定义一个新column; remove column 把column的内容定义为NULL
+stats$haha <- stats$Birth.rate * stats$Internet.users
+head(stats)
+# 添加新column内容时，会默认内容循环，所以需要是row的除数。195行，新定义内容可以是5个，但不能是4个
+stats$haha2 <- c(1,2,3,4,5)
+head(stats)
+# remove: NULL
+stats$haha2 <- NULL
+head(stats)
+
+# 5-47 filtering data frame
+# filter筛选出来的其实是符合的row的信息，所以在row位置上加filter条件即可
+stats[stats$Birth.rate > 40,]
+stats[stats$Birth.rate > 40 & stats$Income.Group == "Low income",]
+stats[stats$Country.Name == "Malta",]
+
+# 5-48,49 qplot
+library(ggplot2)
+qplot(data=stats, x=Birth.rate)
+qplot(data=stats, x=Income.Group, y=Birth.rate)
+qplot(data=stats, x=Income.Group, y=Birth.rate, size=I(10), color=I("yellow"))
+qplot(data=stats, x=Income.Group, y=Birth.rate, geom = "boxplot", color=I(1:4))
+
+qplot(data=stats, x=Internet.users, y=Birth.rate, size=I(10), color=I("yellow"))
+qplot(data=stats, x=Internet.users, y=Birth.rate, size=I(5), color=Income.Group)
+qplot(data=stats, x=Internet.users, y=Birth.rate, size=I(2), color=Income.Group, geom = "line")
+
+# 5-50 create data frames
+# data.frame(columnname1 = vector1, columnname2 = vector2)
+regiondf = data.frame(country = Countries_2012_Dataset, code = Codes_2012_Dataset, region = Regions_2012_Dataset)
+head(regiondf)
+summary.data.frame(regiondf)
+summary(regiondf)
+
+# 5-51 merge data frames
+# merge(df1, df2, by.x="merge target colname of df1", by.y="merge target colname of df2")
+newdf <- merge(stats, regiondf, by.x = "Country.Code", by.y = "code")
+head(newdf)
+newdf$haha<- NULL
+newdf$country <- NULL
+head(newdf)
+
+# 5-52 qplot 2
+qplot(data = newdf, x = Internet.users, y = Birth.rate, size = I(4), color = region)
+# shape. shape
+qplot(data = newdf, x = Internet.users, y = Birth.rate, size = I(4), color = region, shape = I(6))
+qplot(data = newdf, x = Internet.users, y = Birth.rate, size = I(4), color = region, shape = I(19))
+# transparency. alpha: 0->1
+qplot(data = newdf, x = Internet.users, y = Birth.rate, size = I(4), color = region, shape = I(19), alpha = 0.5)
+# title. main
+qplot(data = newdf, x = Internet.users, y = Birth.rate, size = I(4), color = region, shape = I(19), alpha = 0.5, 
+      main = "internet user vs birth rate")
+
+
