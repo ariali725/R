@@ -1,0 +1,77 @@
+# section 4 apply functions
+
+# 4-41 import data
+getwd()
+setwd("./Advanced-section4-Weather Data")
+Chicago <- read.csv("Chicago-C.csv", row.names = 1)
+Houston <- read.csv("Houston-C.csv", row.names = 1)
+NewYork <- read.csv("NewYork-C.csv", row.names = 1)
+SanFrancisco <- read.csv("SanFrancisco-C.csv", row.names = 1)
+
+Chicago <- as.matrix(Chicago)
+Houston <- as.matrix(Houston)
+NewYork <- as.matrix(NewYork)
+SanFrancisco <- as.matrix(SanFrancisco)
+
+Weather <- list(Chicago = Chicago, NewYork = NewYork, Houston = Houston, SanFrancisco = SanFrancisco)
+Weather
+
+# 4-42, 43 apply function
+# apply(matrix, 1/2/3, function); 1 row 2 col 3 both; mean, min, max
+apply(Chicago, 1, mean)
+apply(NewYork, 1, mean)
+apply(Houston, 1, mean)
+apply(SanFrancisco, 1, mean)
+
+# 4-45 lapply()
+# list's apply()  (list, function, 确切点)
+# t() 转置
+TWeather <- lapply(Weather, t)
+TWeather
+
+lapply(Weather, rbind, NewRow=1:12)
+
+# rowMeans, colMeans, rowSums, colSums
+lapply(Weather, rowMeans)
+lapply(Weather, colSums)
+
+# 4-46 lapply []
+Weather[[1]][1,1]
+lapply(Weather, "[", 1,1)  #提取指定数字
+lapply(Weather, "[", ,3) #提起指定row
+
+# 4-47 lapply your own function
+lapply(Weather, function(x) x[1,])
+lapply(Weather, function(x) x[,3])
+lapply(Weather, function(x) x[1,]-x[2,])
+lapply(Weather, function(x) round((x[1,]-x[2,])/x[3,],2))
+
+# 4-48 sapply
+# 可以直接把结果生成table的lapply
+sapply(Weather, function(x) round((x[1,]-x[2,])/x[2,],2))
+sapply(Weather, rowMeans)       
+
+# 4-49
+sapply(Weather, function(x) apply(x,1,max))
+sapply(Weather, function(x) apply(x,1,min))
+
+# 4-50 max/min is in which col
+# names(which.max(matrix[row,col]))
+apply(Chicago, 1, function(x) names(which.max(x)))
+lapply(Weather, function(y) apply(y, 1, function(x) names(which.max(x))))
+sapply(Weather, function(y) apply(y, 1, function(x) names(which.max(x))))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
