@@ -1,0 +1,84 @@
+# section 2 Variables
+# 2-8 variables
+# integer
+a <- 2L
+typeof(a)
+# double
+b <- 2.5
+typeof(b)
+# character
+c <- "x"
+typeof(c)
+# logical
+d <- T
+e <- FALSE
+typeof(d)
+typeof(e)
+
+# 2-9 using variables
+# 加法和打印
+f <- 1
+g <- 2
+h <- f+g
+h
+# 除法和其他
+var1 <- 16
+var2 <- 4
+i <- var1/var2
+i
+j <- sqrt(var1)
+j
+# 联合
+k <- "hello"
+l <- "kitty"
+message <- paste(k, l)
+message
+
+# 2-10 logical variables and operators
+# ==, !=, !(Not), |(or), &
+m <- 4<5
+n <- !(1<2)
+n | m
+n & m
+
+# 2-11 while loop
+# while(condition = true/false){}
+o <- 1
+while (o < 7) {
+  print(o)
+  o <- o+1
+}
+
+# 2-13 for loop
+# while 按条件循环；for按括号里的元素去循环
+for(p in 1:5){
+  print(p)
+}
+for(p in 1:5){
+  p <- p+2
+  print(p)
+}
+
+# 2-14 if
+# rnorm(n, mean = 0, sd = 1); rm() remove 
+x <- rnorm(1)
+if(x > 1){
+  q <- "greater than 1"
+  } else if(x < -1){
+  q <- "less than -1"
+  } else {
+  q <- "between -1 and 1"
+  }
+
+# ex: check whether law of large numbers conforms to normal distribution
+# create random numbers mean = 0, stdev = 1; count how many of these numbers fall between -1 and 1 and divide by the total N; E(X)=68.2%
+N <- 100
+s = 0
+for(r in rnorm(N, mean = 0, sd = 1)){
+  if(r >= -1 & r <=1){
+    s = s + 1
+  }
+}
+t <- s/N
+print(t)
+
