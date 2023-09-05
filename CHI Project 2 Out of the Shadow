@@ -1,0 +1,49 @@
+
+setwd("/Users/R”)
+# Load necessary libraries
+library(openxlsx)
+library(dplyr)
+library(tidyr)
+# Specify the full path to the Excel file
+xlsx_file <- "/Users/R/data2022.xlsx"
+
+# Load the Excel file
+if (file.exists(xlsx_file)) {
+  wb <- loadWorkbook(xlsx_file)
+} else {
+  stop("The specified Excel file does not exist.")
+}
+
+# Read data from OOTS and CHI sheets
+oots_data <- read.xlsx(wb, sheet = "OOTS")
+oots_original_data <- read.xlsx(wb, sheet = "OOTS_original")
+chi_data <- read.xlsx(wb, sheet = "CHI")
+
+
+
+# Create columns for each index in chi_data
+for (i in 1:ncol(oots_data) - 1) {
+  col_name <- paste0("Index_", colnames(oots_data)[i + 2])
+  chi_data[col_name] <- NA
+}
+
+# Loop through each row of chi_data
+for (i in 1:nrow(chi_data)) {
+  country_name <- chi_data$Country[i]
+  matching_row <- oots_data[oots_data$Series == country_name, ]
+  
+  if (nrow(matching_row) > 0) {
+    indexes <- as.vector(matching_row[, -1])
+    chi_data[i, 4:(ncol(chi_data))] <- indexes
+  }
+}
+
+# Print updated chi_data
+print(chi_data)
+
+# Create a new worksheet for MATCH
+addWorksheet(wb, sheetName = "MATCH")
+
+# Write CHI data to the first three columns of MATCH
+writeData(wb, sheet = "MATCH", x = chi_data, startRow = 1, startCol = 1)
+saveWorkbook(wb, "/Users/R/data2022.xlsx", overwrite = TRUE)
