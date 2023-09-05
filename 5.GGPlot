@@ -1,0 +1,143 @@
+# section 6 ggplot
+
+# 6-58 Factor
+getwd()
+movies <- read.csv("Section6-Movie-Ratings.csv")
+head(movies)
+colnames(movies) <- c("Film","Genre","CriticRating","AudienceRating","BudgetMillions","Year")
+
+# if u want to change a numeric column to be categorical, use Factor function.
+# change Year to be categorical
+movies$Year <- factor(movies$Year)
+summary(movies)
+
+# 6-59 Aesthetics
+# qplot is a quick function; ggplot is heavier.
+# Aesthetics = x, y
+library(ggplot2)
+ggplot(data=movies, aes(x=CriticRating, y=AudienceRating, 
+                        color=Genre, size=BudgetMillions))+
+  geom_point()
+
+# 6-60 Layers
+#layers就是画几层图，用点表达，线表达之类的
+movie_figure <- ggplot(data=movies, aes(x=CriticRating, y=AudienceRating, 
+                        color=Genre, size=BudgetMillions))
+movie_figure + geom_point() + geom_line()
+
+# 6-61 overriding aesthetics
+# geom的命令可以override ggplot的命令
+movie_figure + geom_point(aes(x=BudgetMillions)) + xlab("Budget Million")
+movie_figure + geom_point(size=1)
+
+# 6-62 mapping vs setting
+# aes负责mapping, 直接的color/size负责setting
+movie_figure + geom_point(size=5)
+movie_figure + geom_point(aes(size = BudgetMillions))
+
+# 6-63 histograms and density charts
+# histogram; setting的color的对象是border，chart填色是fill
+ggplot(data=movies, aes(x=BudgetMillions)) + 
+  geom_histogram(binwidth=10, aes(fill=Genre), color="red")
+# density charts; position默认是覆盖的，所以需要让其改为叠加
+ggplot(data=movies, aes(x=BudgetMillions)) + 
+  geom_density(aes(fill=Genre),color="red",position="stack")
+
+# 6-64 layer tips
+# 想看同样的数据 但以不同形式表现
+ggplot(data=movies, aes(x=AudienceRating)) +
+  geom_histogram(fill="white", color="blue")
+# 想探索不同的数据
+ggplot(data=movies) + geom_histogram(aes(x=AudienceRating), fill="black", color="yellow")
+
+# 6-65 stats transformations
+# 加曲线或曲线区间 用geom_smooth
+ggplot(data=movies, aes(x=CriticRating, y=AudienceRating, color=Genre)) +
+  geom_point() + geom_smooth(fill=NA)
+# boxplot. jitter是散点
+ggplot(data=movies, aes(x=Genre, y=AudienceRating, color=Genre)) +
+         geom_jitter() + geom_boxplot(alpha = 0.5)
+
+# 6-65 facets
+# facet_grid() 按row分层（factor~.,）按col分层（.~factor,）
+# 分类
+ggplot(data=movies, aes(x=AudienceRating, color=Genre)) +
+   geom_histogram(binwidth=10, aes(fill=Genre), color="black") + 
+  facet_grid(Genre~., scale="free")
+
+ggplot(data=movies, aes(x=AudienceRating)) +
+  geom_histogram(binwidth=10, aes(fill=Year), color="black") + 
+  facet_grid(.~Year)
+
+# 连续
+ggplot(data=movies, aes(x=AudienceRating,y=CriticRating, color=Genre)) +
+  geom_point(size=3, alpha=0.5) + facet_grid(Genre~.~Year) + geom_smooth()
+
+# 6-67 coordinates
+# zoom in功能用coord_cartesian(x/ylim=c(起点，终点));单纯限制取值范围用xlim(起点，终点) ylim(起点，终点)
+#单纯limit
+ggplot(data=movies, aes(x=AudienceRating)) +
+  geom_histogram(aes(fill=Genre), color="black") + ylim(0,10)
+# zoom in
+ggplot(data=movies, aes(x=AudienceRating,y=CriticRating, color=Genre)) +
+  geom_point(size=3, alpha=0.5) + facet_grid(Genre~.~Year) + geom_smooth() +
+  coord_cartesian(ylim = c(0,50))
+
+# 6-68 Theme
+# Axes labels: xlab() ylab() theme(axis.title.x = element_text(color = , size=))
+ggplot(data=movies, aes(x=AudienceRating)) +
+  geom_histogram(aes(fill=Genre), color="black") +
+  xlab("Audience's Rating") + ylab("Number of Movies") +
+  theme(axis.title.x = element_text(color="red", size=30), axis.title.y = element_text(color="blue", size=30))
+# axis' texts
+ggplot(data=movies, aes(x=AudienceRating)) +
+  geom_histogram(aes(fill=Genre), color="black") +
+  xlab("Audience's Rating") + ylab("Number of Movies") +
+  theme(axis.title.x = element_text(color="red", size=30), axis.title.y = element_text(color="blue", size=30),
+        axis.text.x = element_text(size=15), axis.text.y=element_text(size=15))
+# legend's text and position
+ggplot(data=movies, aes(x=AudienceRating)) +
+  geom_histogram(aes(fill=Genre), color="black") +
+  xlab("Audience's Rating") + ylab("Number of Movies") +
+  theme(axis.title.x = element_text(color="red", size=30), axis.title.y = element_text(color="blue", size=30),
+        axis.text.x = element_text(size=15), axis.text.y=element_text(size=15),
+        legend.title = element_text(size=15),
+        legend.text = element_text(size=15),
+        legend.position = c(1,1),          # 0,0左下角 1，1右上角
+        legend.justification = c(1,1))     # 把图例放坐标里
+
+# plot's title
+ggplot(data=movies, aes(x=AudienceRating)) +
+  geom_histogram(aes(fill=Genre), color="black") +
+  xlab("Audience's Rating") + ylab("Number of Movies") + 
+  ggtitle("Audience's Rating Distribution") +
+  theme(axis.title.x = element_text(color="red", size=30), axis.title.y = element_text(color="blue", size=30),
+        axis.text.x = element_text(size=15), axis.text.y=element_text(size=15),
+        plot.title = element_text(color="green", size =15)
+        )
+
+# 6-69 homework
+# create the same plot
+hm <- read.csv(file.choose(), stringsAsFactors = T)
+head(hm)
+colnames(hm) <- c("day", "director","genre","movie","release", "studio", "ad.gross","budget","gross","imdb","movielens",
+         "oversea.gross", "oversea.percent","profit","profit.percent","time","us.gross","us.percent")
+summary(hm)
+str(hm)
+levels(hm$genre)
+filter.genre <- (hm$genre=="action")|(hm$genre=="adventure")|(hm$genre=="animation")|(hm$genre=="comedy")|(hm$genre=="drama")
+filter.studio <- (hm$studio=="Fox")|(hm$studio=="WB")|(hm$studio=="Sony")|(hm$studio=="Universal")
+hm2 <- hm[filter.genre & filter.studio,]
+head(hm2)
+ggplot(data=hm2, aes(x=genre, y=us.percent, size=budget))  +
+   geom_jitter(aes(color=studio)) + geom_boxplot(alpha=0.5) +
+  xlab("Genre") + ylab("Gross%US") + ggtitle("Domestic Gross % by Genre") +
+  theme(axis.title.x = element_text(color="blue",size=12),
+        axis.title.y = element_text(color="blue",size=12),
+        plot.title = element_text(color = "black", size=12),
+        legend.title = element_text(size=12),
+        legend.text = element_text(size=12),
+        legend.position = c(1,1)
+        )
+
+
