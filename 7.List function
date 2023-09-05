@@ -1,0 +1,89 @@
+# section 3 list
+# 3-30 import data
+util <- read.csv("Advanced-section3-Machine-Utilization.csv")
+summary(util)
+util$Utilization = 1- util$Percent.Idle
+head(util,12)
+
+# 3-31 handling time-date
+?POSIXct
+# R用自己的time标准 就是POSIX 1970年以后的时间都可以设置成这个 要告诉系统原本的format
+util$PosixTime <- as.POSIXct(util$Timestamp, format="%d/%m/%Y %H:%M")
+head(util, 12)
+# 把时间栏调顺序调到第一栏
+util$Timestamp <- NULL
+util <- util[,c(4,1,2,3)]
+head(util,12)
+
+# 3-32 list
+# 把几个vector放进一个list: 机器名，min max mean, Y/N 低于90%效率
+# 拆分出机器RL1的df
+rl1_df <- util[which(util$Machine=="RL1"),]
+tail(rl1_df)
+# min max mean
+rl1_stat <- c(min(rl1_df$Utilization,na.rm = T), mean(rl1_df$Utilization,na.rm=T),max(rl1_df$Utilization, na.rm = T))
+rl1_stat
+# RL1是否有90
+under_90_flag <- length(which(rl1_df$Utilization < 0.90)) > 0
+under_90_flag
+
+list_rl1 <- list("RL1", rl1_stat,under_90_flag)
+list_rl1
+
+# 3-33 name the components in the list
+# way 1
+names(list_rl1) <- c("Machine", "Stats", "LowThreshold")
+# way 2
+rm(list_rl1)
+list_rl1 <- list(Machine = "RL1", Stats = rl1_stat, LowThreshold = under_90_flag)
+list_rl1
+
+# 3-34 return the content of list
+# list[num] return list
+# list[[num]] or list$name return element
+list_rl1[2]
+list_rl1[[2]]
+list_rl1$Stats
+list_rl1$Stats[3]
+
+# add or remove lists in the list
+list_rl1$UnknownHours <- rl1_df[is.na(rl1_df$Utilization),]
+list_rl1
+
+list_rl1[5] <- "remove"
+list_rl1
+list_rl1[5] <- NULL
+list_rl1
+# list remove一个后 序号自动顶上去 和df不一样
+
+list_rl1$Data <- rl1_df
+
+summary(list_rl1)
+
+# 3-36 subsetting
+list_rl1[1:3]
+list_rl1[c(1, 4)]
+
+# 3-37 Time series plot
+library(ggplot2)
+timeplot <- ggplot(data = util, aes(x=PosixTime, y=Utilization, color=Machine)) +
+  geom_line(size=1.2) +
+  facet_grid(Machine~.) +
+  geom_hline(yintercept = 0.90, color="Red", size=1.2, linetype=3)
+timeplot
+
+list_rl1$Plot <- timeplot
+
+
+
+
+
+
+
+
+
+
+
+
+
+
